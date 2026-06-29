@@ -12,17 +12,20 @@
 #include <string.h>
 
 /**
- * struct syscall_s - maps a syscall number to its name
+ * struct syscall_s - maps a syscall number to its name and arg count
  * @num: syscall number
  * @name: syscall name string
+ * @nargs: number of arguments (-1 = variadic)
  */
 typedef struct syscall_s
 {
 	long num;
 	const char *name;
+	int nargs;
 } syscall_t;
 
 const char *get_syscall_name(long num);
-int run_strace(int argc, char **argv, int print_name);
+int get_syscall_nargs(long num);
+int run_strace(int argc, char **argv, int mode);
 
 #endif /* STRACE_H */
