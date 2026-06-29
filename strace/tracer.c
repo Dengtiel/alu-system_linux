@@ -24,6 +24,8 @@ static void child_exec(char **argv)
 static void print_args(struct user_regs_struct *regs, int nargs)
 {
 	unsigned long args[6];
+	int i;
+
 
 	args[0] = regs->rdi;
 	args[1] = regs->rsi;
@@ -32,24 +34,28 @@ static void print_args(struct user_regs_struct *regs, int nargs)
 	args[4] = regs->r8;
 	args[5] = regs->r9;
 
+
 	if (nargs == -1)
 	{
-		printf("0x%lx, 0x%lx, ...", args[0], args[1]);
+		if (args[0] == 0)
+			printf("0, ");
+		else
+			printf("0x%lx, ", args[0]);
+		if (args[1] == 0)
+			printf("0, ...");
+		else
+			printf("0x%lx, ...", args[1]);
 		return;
 	}
-	if (nargs == 0)
-		return;
-	printf("0x%lx", args[0]);
-	if (nargs > 1)
-		printf(", 0x%lx", args[1]);
-	if (nargs > 2)
-		printf(", 0x%lx", args[2]);
-	if (nargs > 3)
-		printf(", 0x%lx", args[3]);
-	if (nargs > 4)
-		printf(", 0x%lx", args[4]);
-	if (nargs > 5)
-		printf(", 0x%lx", args[5]);
+	for (i = 0; i < nargs; i++)
+	{
+		if (i > 0)
+			printf(", ");
+		if (args[i] == 0)
+			printf("0");
+		else
+			printf("0x%lx", args[i]);
+	}
 }
 
 /**
