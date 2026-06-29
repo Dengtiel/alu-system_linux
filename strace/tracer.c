@@ -23,6 +23,7 @@ static void child_exec(char **argv)
 static void print_syscall_num(struct user_regs_struct *regs)
 {
 	printf("%lu\n", (unsigned long)regs->orig_rax);
+	fflush(stdout);
 }
 
 /**
@@ -40,6 +41,7 @@ static void print_syscall_name_regs(struct user_regs_struct *regs)
 		printf("%s\n", name);
 	else
 		printf("unknown_%ld\n", num);
+	fflush(stdout);
 }
 
 /**
@@ -74,11 +76,11 @@ int run_strace(int argc, char **argv, int print_name)
 	waitpid(child, &status, 0);
 	ptrace(PTRACE_SETOPTIONS, child, 0, PTRACE_O_TRACESYSGOOD);
 
-	/* print execve (59) manually - it is the first syscall */
 	if (print_name)
 		printf("execve\n");
 	else
 		printf("59\n");
+	fflush(stdout);
 
 	in_syscall = 0;
 	while (1)
