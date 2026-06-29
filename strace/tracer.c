@@ -38,9 +38,16 @@ static void print_syscall_name_regs(struct user_regs_struct *regs)
 	num = (long)regs->orig_rax;
 	name = get_syscall_name(num);
 	if (name != NULL)
-		printf("%s\n", name);
+	{
+		if (num == 1)
+			printf("%s", name);
+		else
+			printf("%s\n", name);
+	}
 	else
+	{
 		printf("unknown_%ld\n", num);
+	}
 	fflush(stdout);
 }
 
