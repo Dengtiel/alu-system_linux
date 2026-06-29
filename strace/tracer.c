@@ -70,20 +70,33 @@ int run_strace(int argc, char **argv, int print_name)
 	}
 	if (child == 0)
 		child_exec(argv + 1);
+
 	waitpid(child, &status, 0);
 	ptrace(PTRACE_SETOPTIONS, child, 0, PTRACE_O_TRACESYSGOOD);
+
+	/* print execve (59) manually - it is the first syscall */
+	if (print_name)
+		printf("execve\n");
+	else
+		printf("59\n");
+
 	in_syscall = 0;
 	while (1)
 	{
 		ptrace(PTRACE_SYSCALL, child, NULL, NULL);
 		waitpid(child, &status, 0);
+
 		if (WIFEXITED(status) || WIFSIGNALED(status))
 			break;
+
 		if (!WIFSTOPPED(status))
 			continue;
+
 		if ((WSTOPSIG(status) & 0x80) == 0)
 			continue;
+
 		ptrace(PTRACE_GETREGS, child, NULL, &regs);
+
 		if (in_syscall == 0)
 		{
 			if (print_name)
