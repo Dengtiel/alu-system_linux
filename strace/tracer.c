@@ -99,6 +99,8 @@ static void print_retval_mode(struct user_regs_struct *regs,
 			printf("unknown_%ld = ", last_syscall);
 		if (name && strcmp(name, "exit_group") == 0)
 			printf("?\n");
+		else if (retval == 0)
+			printf("0\n");
 		else
 			printf("0x%lx\n", retval);
 		fflush(stdout);
@@ -176,7 +178,6 @@ int run_strace(int argc, char **argv, int mode)
 
 		in_syscall ^= 1;
 	}
-	/* print exit_group = ? */
 	if (mode == 2)
 	{
 		printf("exit_group = ?\n");
