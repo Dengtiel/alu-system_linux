@@ -167,12 +167,11 @@ static void print_full_mode(struct user_regs_struct *regs,
 		{
 			printf("%s(", name ? name : "unknown");
 			print_args(saved_regs, nargs);
-			printf(")");
 			fflush(stdout);
 		}
 		else
 		{
-			printf(" = 0x%lx\n", retval);
+			printf(") = 0x%lx\n", retval);
 			fflush(stdout);
 		}
 		return;
