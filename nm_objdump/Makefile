@@ -4,9 +4,9 @@ SRCS = hnm.c elf_dispatch.c elf32.c elf64.c sym_type.c swap.c output.c
 OBJS = $(SRCS:.c=.o)
 NAME = hnm
 
-all: $(NAME)
+all: hnm
 
-$(NAME): $(OBJS)
+hnm: $(OBJS)
 	$(CC) $(CFLAGS) -o $(NAME) $(OBJS)
 
 %.o: %.c hnm.h
@@ -18,6 +18,6 @@ clean:
 fclean: clean
 	rm -f $(NAME)
 
-re: fclean all
+re: fclean hnm
 
-.PHONY: all clean fclean re
+.PHONY: all hnm clean fclean re

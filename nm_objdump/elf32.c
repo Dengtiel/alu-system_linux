@@ -165,7 +165,7 @@ static int read_elf32_core(int fd, const char *filename, int swap)
 				strtab_off, shnum, swap);
 	if (!entries)
 		goto cleanup;
-	print_symbols(entries, symcount);
+	print_symbols(entries, symcount, 0);
 	free_symbols(entries, symcount);
 	ret = 0;
 cleanup:
