@@ -22,7 +22,7 @@ static void child_exec(char **argv)
  */
 static void print_syscall_num(struct user_regs_struct *regs)
 {
-	printf("%llu\n", (unsigned long long)regs->orig_rax);
+	printf("%lu\n", (unsigned long)regs->orig_rax);
 }
 
 /**
