@@ -275,6 +275,7 @@ static const syscall_t syscalls[] = {
 	{267, "readlinkat", 4},
 	{268, "fchmodat", 3},
 	{269, "faccessat", 3},
+	{439, "faccessat2", 5},
 	{270, "pselect6", 6},
 	{271, "ppoll", 5},
 	{272, "unshare", 1},
