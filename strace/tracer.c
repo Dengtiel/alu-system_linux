@@ -29,26 +29,38 @@ static void print_syscall_num(struct user_regs_struct *regs)
 /**
  * print_syscall_name_regs - print syscall name from registers
  * @regs: pointer to user_regs_struct filled by ptrace
+ * @in_syscall: 0 = entry, 1 = exit
  */
-static void print_syscall_name_regs(struct user_regs_struct *regs)
+static void print_syscall_name_regs(struct user_regs_struct *regs,
+	int in_syscall)
 {
 	long num;
 	const char *name;
 
 	num = (long)regs->orig_rax;
 	name = get_syscall_name(num);
-	if (name != NULL)
+	if (num == 1)
 	{
-		if (num == 1)
-			printf("%s", name);
+		if (in_syscall == 0)
+		{
+			printf("%s", name ? name : "unknown");
+			fflush(stdout);
+		}
 		else
-			printf("%s\n", name);
+		{
+			printf("\n");
+			fflush(stdout);
+		}
+		return;
 	}
-	else
+	if (in_syscall == 0)
 	{
-		printf("unknown_%ld\n", num);
+		if (name != NULL)
+			printf("%s\n", name);
+		else
+			printf("unknown_%ld\n", num);
+		fflush(stdout);
 	}
-	fflush(stdout);
 }
 
 /**
@@ -106,13 +118,11 @@ int run_strace(int argc, char **argv, int print_name)
 
 		ptrace(PTRACE_GETREGS, child, NULL, &regs);
 
-		if (in_syscall == 0)
-		{
-			if (print_name)
-				print_syscall_name_regs(&regs);
-			else
-				print_syscall_num(&regs);
-		}
+		if (print_name)
+			print_syscall_name_regs(&regs, in_syscall);
+		else if (in_syscall == 0)
+			print_syscall_num(&regs);
+
 		in_syscall ^= 1;
 	}
 	return (WIFEXITED(status) ? WEXITSTATUS(status) : 1);
