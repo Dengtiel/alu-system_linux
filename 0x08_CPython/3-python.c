@@ -8,7 +8,8 @@
 void print_python_float(PyObject *p)
 {
 	PyFloatObject *f;
-	char *buf;
+	PyObject *repr;
+	char *str;
 
 	setbuf(stdout, NULL);
 	printf("[.] float object info\n");
@@ -20,9 +21,10 @@ void print_python_float(PyObject *p)
 	}
 
 	f = (PyFloatObject *)p;
-	buf = PyOS_double_to_string(f->ob_fval, 'r', 0, Py_DTSF_ADD_DOT_0, NULL);
-	printf("  value: %s\n", buf);
-	PyMem_Free(buf);
+	repr = PyObject_Repr((PyObject *)f);
+	str = PyBytes_AS_STRING(PyUnicode_AsEncodedString(repr, "utf-8", "strict"));
+	printf("  value: %s\n", str);
+	Py_DECREF(repr);
 }
 
 /**
