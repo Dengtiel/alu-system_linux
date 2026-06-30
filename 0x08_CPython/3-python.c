@@ -1,5 +1,28 @@
 #include <Python.h>
 #include <stdio.h>
+#include <string.h>
+
+/**
+ * format_float - format a double like Python 3.4 repr (16 sig digits)
+ * @val: the double value
+ * @buf: output buffer (must be at least 64 bytes)
+ */
+static void format_float(double val, char *buf)
+{
+	char *p;
+
+	PyOS_snprintf(buf, 64, "%.16g", val);
+	/* Add .0 if no decimal point or exponent */
+	if (strchr(buf, '.') == NULL && strchr(buf, 'e') == NULL
+		&& strchr(buf, 'E') == NULL && strchr(buf, 'n') == NULL
+		&& strchr(buf, 'N') == NULL)
+	{
+		p = buf + strlen(buf);
+		*p++ = '.';
+		*p++ = '0';
+		*p = '\0';
+	}
+}
 
 /**
  * print_python_float - prints basic info about a Python float object
@@ -8,7 +31,7 @@
 void print_python_float(PyObject *p)
 {
 	PyFloatObject *f;
-	char *buf;
+	char buf[64];
 
 	setbuf(stdout, NULL);
 	printf("[.] float object info\n");
@@ -20,10 +43,8 @@ void print_python_float(PyObject *p)
 	}
 
 	f = (PyFloatObject *)p;
-	buf = PyOS_double_to_string(f->ob_fval, 'r', 0,
-		Py_DTSF_ADD_DOT_0, NULL);
+	format_float(f->ob_fval, buf);
 	printf("  value: %s\n", buf);
-	PyMem_Free(buf);
 }
 
 /**
