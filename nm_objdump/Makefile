@@ -1,6 +1,7 @@
 CC = gcc
 CFLAGS = -Wall -Werror -Wextra -pedantic
-SRCS = hnm.c elf_dispatch.c elf32.c elf64.c sym_type.c swap.c output.c
+SRCS = hnm.c elf_dispatch.c elf32.c elf32_utils.c elf64.c elf64_utils.c \
+	sym_type.c swap.c output.c
 OBJS = $(SRCS:.c=.o)
 NAME = hnm
 
