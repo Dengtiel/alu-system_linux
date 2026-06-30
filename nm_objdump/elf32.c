@@ -112,11 +112,13 @@ static sym_entry_t *build_entries32(int fd, Elf32_Sym *syms,
  * read_elf32_core - core logic for reading 32-bit ELF
  * @fd: file descriptor
  * @filename: file name for errors
+ * @prog: program name (argv[0]) for errors
  * @swap: non-zero if byte-swapping needed
  *
  * Return: 0 on success, 1 on error
  */
-static int read_elf32_core(int fd, const char *filename, int swap)
+static int read_elf32_core(int fd, const char *filename,
+		const char *prog, int swap)
 {
 	Elf32_Ehdr ehdr;
 	Elf32_Shdr *shdrs = NULL;
@@ -137,7 +139,7 @@ static int read_elf32_core(int fd, const char *filename, int swap)
 	find_symtab32(shdrs, shnum, &sym_idx, &str_idx, swap);
 	if (sym_idx < 0 || str_idx < 0 || str_idx >= shnum)
 	{
-		fprintf(stderr, "hnm: %s: no symbols\n", filename);
+		fprintf(stderr, "%s: %s: no symbols\n", prog, filename);
 		free(shdrs);
 		return (0);
 	}
@@ -162,22 +164,24 @@ cleanup:
  * read_elf32_le - read little-endian 32-bit ELF
  * @fd: file descriptor
  * @filename: file name for errors
+ * @prog: program name for errors
  *
  * Return: 0 on success, 1 on error
  */
-int read_elf32_le(int fd, const char *filename)
+int read_elf32_le(int fd, const char *filename, const char *prog)
 {
-	return (read_elf32_core(fd, filename, 0));
+	return (read_elf32_core(fd, filename, prog, 0));
 }
 
 /**
  * read_elf32_be - read big-endian 32-bit ELF
  * @fd: file descriptor
  * @filename: file name for errors
+ * @prog: program name for errors
  *
  * Return: 0 on success, 1 on error
  */
-int read_elf32_be(int fd, const char *filename)
+int read_elf32_be(int fd, const char *filename, const char *prog)
 {
-	return (read_elf32_core(fd, filename, 1));
+	return (read_elf32_core(fd, filename, prog, 1));
 }

@@ -13,7 +13,7 @@ int main(int argc, char **argv)
 
 	if (argc < 2)
 	{
-		fprintf(stderr, "hnm: no input files\n");
+		fprintf(stderr, "%s: no input files\n", argv[0]);
 		return (1);
 	}
 
@@ -21,7 +21,7 @@ int main(int argc, char **argv)
 	{
 		if (argc > 2)
 			printf("\n%s:\n", argv[i]);
-		if (process_elf_file(argv[i]) != 0)
+		if (process_elf_file(argv[i], argv[0]) != 0)
 			ret = 1;
 	}
 

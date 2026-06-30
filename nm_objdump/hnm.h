@@ -26,21 +26,23 @@ typedef struct sym_entry
 } sym_entry_t;
 
 /* ELF processing */
-int process_elf_file(const char *filename);
-int process_elf32(int fd, unsigned char *ident, const char *filename);
-int process_elf64(int fd, unsigned char *ident, const char *filename);
+int process_elf_file(const char *filename, const char *prog);
+int process_elf32(int fd, unsigned char *ident,
+		const char *filename, const char *prog);
+int process_elf64(int fd, unsigned char *ident,
+		const char *filename, const char *prog);
 
 /* 32-bit helpers */
-int read_elf32_le(int fd, const char *filename);
-int read_elf32_be(int fd, const char *filename);
+int read_elf32_le(int fd, const char *filename, const char *prog);
+int read_elf32_be(int fd, const char *filename, const char *prog);
 void find_symtab32(Elf32_Shdr *shdrs, int shnum,
 		int *sym_idx, int *str_idx, int swap);
 Elf32_Shdr *load_shdrs32(int fd, Elf32_Ehdr *ehdr,
 		int shnum, int swap);
 
 /* 64-bit helpers */
-int read_elf64_le(int fd, const char *filename);
-int read_elf64_be(int fd, const char *filename);
+int read_elf64_le(int fd, const char *filename, const char *prog);
+int read_elf64_be(int fd, const char *filename, const char *prog);
 void find_symtab64(Elf64_Shdr *shdrs, int shnum,
 		int *sym_idx, int *str_idx, int swap);
 Elf64_Shdr *load_shdrs64(int fd, Elf64_Ehdr *ehdr,
