@@ -1,24 +1,30 @@
 CC = gcc
 CFLAGS = -Wall -Werror -Wextra -pedantic
-SRCS = hnm.c elf_dispatch.c elf32.c elf32_utils.c elf64.c elf64_utils.c \
+
+HNM_SRCS = hnm.c elf_dispatch.c elf32.c elf32_utils.c elf64.c elf64_utils.c \
 	sym_type.c swap.c output.c
-OBJS = $(SRCS:.c=.o)
-NAME = hnm
+HNM_OBJS = $(HNM_SRCS:.c=.o)
 
-all: hnm
+HOBJ_SRCS = hobjdump.c dispatch.c obj32.c obj64.c elfinfo.c hexdump.c bswap.c
+HOBJ_OBJS = $(HOBJ_SRCS:.c=.o)
 
-hnm: $(OBJS)
-	$(CC) $(CFLAGS) -o $(NAME) $(OBJS)
+all: hnm hobjdump
 
-%.o: %.c hnm.h
+hnm: $(HNM_OBJS)
+	$(CC) $(CFLAGS) -o hnm $(HNM_OBJS)
+
+hobjdump: $(HOBJ_OBJS)
+	$(CC) $(CFLAGS) -o hobjdump $(HOBJ_OBJS)
+
+%.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(OBJS)
+	rm -f $(HNM_OBJS) $(HOBJ_OBJS)
 
 fclean: clean
-	rm -f $(NAME)
+	rm -f hnm hobjdump
 
-re: fclean hnm
+re: fclean all
 
-.PHONY: all hnm clean fclean re
+.PHONY: all hnm hobjdump clean fclean re
