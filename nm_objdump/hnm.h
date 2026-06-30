@@ -37,16 +37,24 @@ int read_elf32_le(int fd, const char *filename, const char *prog);
 int read_elf32_be(int fd, const char *filename, const char *prog);
 void find_symtab32(Elf32_Shdr *shdrs, int shnum,
 		int *sym_idx, int *str_idx, int swap);
-Elf32_Shdr *load_shdrs32(int fd, Elf32_Ehdr *ehdr,
-		int shnum, int swap);
+Elf32_Shdr *load_shdrs32(int fd, Elf32_Ehdr *ehdr, int shnum, int swap);
+sym_entry_t build_entry32(int fd, Elf32_Sym *sym,
+		Elf32_Shdr *shdrs, uint32_t strtab_off, int shnum, int swap);
+sym_entry_t *build_entries32(int fd, Elf32_Sym *syms,
+		Elf32_Shdr *shdrs, size_t symcount,
+		uint32_t strtab_off, int shnum, int swap);
 
 /* 64-bit helpers */
 int read_elf64_le(int fd, const char *filename, const char *prog);
 int read_elf64_be(int fd, const char *filename, const char *prog);
 void find_symtab64(Elf64_Shdr *shdrs, int shnum,
 		int *sym_idx, int *str_idx, int swap);
-Elf64_Shdr *load_shdrs64(int fd, Elf64_Ehdr *ehdr,
-		int shnum, int swap);
+Elf64_Shdr *load_shdrs64(int fd, Elf64_Ehdr *ehdr, int shnum, int swap);
+sym_entry_t build_entry64(int fd, Elf64_Sym *sym,
+		Elf64_Shdr *shdrs, uint64_t strtab_off, int shnum, int swap);
+sym_entry_t *build_entries64(int fd, Elf64_Sym *syms,
+		Elf64_Shdr *shdrs, size_t symcount,
+		uint64_t strtab_off, int shnum, int swap);
 
 /* Symbol type */
 char get_sym_type32(Elf32_Sym *sym, Elf32_Shdr *shdrs,

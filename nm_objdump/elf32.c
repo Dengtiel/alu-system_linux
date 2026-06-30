@@ -45,74 +45,10 @@ static Elf32_Sym *read_sym_table32(int fd, Elf32_Shdr *shdrs,
 }
 
 /**
- * build_entry32 - build one sym_entry_t from a 32-bit symbol
- * @fd: file descriptor
- * @sym: pointer to Elf32_Sym
- * @shdrs: array of section headers
- * @strtab_off: string table file offset
- * @shnum: number of sections
- * @swap: non-zero if byte-swapping needed
- *
- * Return: populated sym_entry_t
- */
-static sym_entry_t build_entry32(int fd, Elf32_Sym *sym,
-		Elf32_Shdr *shdrs, uint32_t strtab_off,
-		int shnum, int swap)
-{
-	sym_entry_t entry;
-	uint32_t name_off, val;
-	char namebuf[256];
-	ssize_t n;
-
-	name_off = swap ? swap32(sym->st_name) : sym->st_name;
-	if (lseek(fd, strtab_off + name_off, SEEK_SET) < 0)
-		entry.name = strdup("");
-	else
-	{
-		n = read(fd, namebuf, sizeof(namebuf) - 1);
-		namebuf[n > 0 ? n : 0] = '\0';
-		entry.name = strdup(namebuf);
-	}
-	val = swap ? swap32(sym->st_value) : sym->st_value;
-	entry.value = (unsigned long)val;
-	entry.type = get_sym_type32(sym, shdrs, shnum, swap);
-	entry.has_value = (sym->st_shndx != SHN_UNDEF);
-	return (entry);
-}
-
-/**
- * build_entries32 - build full sym_entry_t array for 32-bit ELF
- * @fd: file descriptor
- * @syms: array of Elf32_Sym
- * @shdrs: array of section headers
- * @symcount: number of symbols
- * @strtab_off: string table file offset
- * @shnum: number of sections
- * @swap: non-zero if byte-swapping needed
- *
- * Return: allocated sym_entry_t array or NULL
- */
-static sym_entry_t *build_entries32(int fd, Elf32_Sym *syms,
-		Elf32_Shdr *shdrs, size_t symcount,
-		uint32_t strtab_off, int shnum, int swap)
-{
-	sym_entry_t *entries;
-	size_t i;
-
-	entries = malloc(symcount * sizeof(sym_entry_t));
-	if (!entries)
-		return (NULL);
-	for (i = 0; i < symcount; i++)
-		entries[i] = build_entry32(fd, &syms[i], shdrs,
-					strtab_off, shnum, swap);
-	return (entries);
-}
-
-/**
  * read_elf32_core - core logic for reading 32-bit ELF
  * @fd: file descriptor
  * @filename: file name for errors
- * @prog: program name (argv[0]) for errors
+ * @prog: program name for errors
  * @swap: non-zero if byte-swapping needed
  *
  * Return: 0 on success, 1 on error
