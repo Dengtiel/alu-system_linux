@@ -9,18 +9,20 @@
 const char *elf_fmt32(Elf32_Ehdr *e, int sw)
 {
 	uint16_t mach = sw ? bswap16(e->e_machine) : e->e_machine;
+	uint8_t data = e->e_ident[EI_DATA];
 
 	if (mach == EM_386)
 		return ("elf32-i386");
-	if (mach == EM_SPARC || mach == EM_SPARC32PLUS)
-		return ("elf32-sparc");
 	if (mach == EM_MIPS)
-		return ("elf32-bigmips");
+		return (data == ELFDATA2MSB ? "elf32-bigmips"
+			: "elf32-littlemips");
 	if (mach == EM_PPC)
 		return ("elf32-powerpc");
 	if (mach == EM_ARM)
 		return ("elf32-littlearm");
-	return ("elf32-unknown");
+	if (data == ELFDATA2MSB)
+		return ("elf32-big");
+	return ("elf32-little");
 }
 
 /**
@@ -56,15 +58,13 @@ const char *elf_arch32(Elf32_Ehdr *e, int sw)
 
 	if (mach == EM_386)
 		return ("i386");
-	if (mach == EM_SPARC || mach == EM_SPARC32PLUS)
-		return ("sparc");
 	if (mach == EM_MIPS)
 		return ("mips");
 	if (mach == EM_PPC)
 		return ("powerpc:common");
 	if (mach == EM_ARM)
 		return ("arm");
-	return ("unknown");
+	return ("UNKNOWN!");
 }
 
 /**
@@ -85,7 +85,7 @@ const char *elf_arch64(Elf64_Ehdr *e, int sw)
 		return ("powerpc:common64");
 	if (mach == EM_SPARCV9)
 		return ("sparc:v9");
-	return ("unknown");
+	return ("UNKNOWN!");
 }
 
 /**

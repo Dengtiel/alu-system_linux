@@ -5,7 +5,7 @@
  * @fd: file descriptor
  * @shdrs: section headers
  * @shstrndx: string table section index
- * @sh_name: offset into string table
+ * @sh_name: offset into string table (already swapped)
  * @sw: swap flag
  * @buf: output buffer
  * @bufsz: buffer size
@@ -42,10 +42,11 @@ static void dump_section64(int fd, const char *name,
 	unsigned char buf[16];
 	uint64_t pos = 0;
 	ssize_t n;
-	int chunk;
+	int chunk, addrw;
 
 	if (size == 0)
 		return;
+	addrw = hex_addr_width((unsigned long)(addr + size - 1));
 	printf("Contents of section %s:\n", name);
 	if (lseek(fd, (off_t)offset, SEEK_SET) < 0)
 		return;
@@ -58,9 +59,27 @@ static void dump_section64(int fd, const char *name,
 		if (n <= 0)
 			break;
 		print_hex_line((unsigned long)(addr + pos), buf,
-				(int)n, 16);
+				(int)n, 16, addrw);
 		pos += (uint64_t)n;
 	}
+}
+
+/**
+ * should_print64 - decide if a section should be printed
+ * @type: section type
+ * @flags: section flags
+ *
+ * Return: 1 if section should be printed, 0 otherwise
+ */
+static int should_print64(uint32_t type, uint64_t flags)
+{
+	if (type == SHT_NULL || type == SHT_NOBITS)
+		return (0);
+	if (flags & SHF_ALLOC)
+		return (1);
+	if (type == SHT_PROGBITS || type == SHT_NOTE)
+		return (1);
+	return (0);
 }
 
 /**
@@ -76,7 +95,7 @@ int print_sections64(int fd, Elf64_Ehdr *e,
 		Elf64_Shdr *shdrs, int sw)
 {
 	int i, shnum, shstrndx;
-	uint32_t type;
+	uint32_t type, sh_name;
 	uint64_t flags, addr, offset, size;
 	char name[256];
 
@@ -92,12 +111,12 @@ int print_sections64(int fd, Elf64_Ehdr *e,
 		offset = sw ? bswap64(shdrs[i].sh_offset)
 			: shdrs[i].sh_offset;
 		size = sw ? bswap64(shdrs[i].sh_size) : shdrs[i].sh_size;
-		if (type == SHT_NULL || type == SHT_NOBITS)
+		sh_name = sw ? bswap32(shdrs[i].sh_name)
+			: shdrs[i].sh_name;
+		if (!should_print64(type, flags))
 			continue;
-		if (!(flags & SHF_ALLOC) && type != SHT_PROGBITS)
-			continue;
-		get_shname64(fd, shdrs, shstrndx,
-			shdrs[i].sh_name, sw, name, sizeof(name));
+		get_shname64(fd, shdrs, shstrndx, sh_name, sw,
+			name, sizeof(name));
 		dump_section64(fd, name, addr, offset, size);
 	}
 	return (0);

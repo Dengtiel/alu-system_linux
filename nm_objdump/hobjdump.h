@@ -34,6 +34,7 @@ const char *elf_fmt32(Elf32_Ehdr *e, int sw);
 const char *elf_fmt64(Elf64_Ehdr *e, int sw);
 void print_flags(uint32_t flags);
 void print_hex_line(unsigned long addr, unsigned char *buf,
-		int len, int bytes_per_line);
+		int len, int bytes_per_line, int addrw);
+int hex_addr_width(unsigned long max_addr);
 
 #endif /* HOBJDUMP_H */
