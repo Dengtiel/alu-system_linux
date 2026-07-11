@@ -69,6 +69,7 @@ void *thread_entry(void *arg);
 
 /* Task 10 */
 void blur_portion(blur_portion_t const *portion);
+void blur_image(img_t *img_blur, img_t const *img, kernel_t const *kernel);
 
 #endif /* MULTITHREADING_H */
 
