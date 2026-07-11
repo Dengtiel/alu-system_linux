@@ -2,6 +2,7 @@
 #define MULTITHREADING_H
 
 #include <stddef.h>
+#include "list.h"
 #include <stdint.h>
 #include <pthread.h>
 
@@ -70,6 +71,9 @@ void *thread_entry(void *arg);
 /* Task 10 */
 void blur_portion(blur_portion_t const *portion);
 void blur_image(img_t *img_blur, img_t const *img, kernel_t const *kernel);
+
+
+list_t *prime_factors(char const *s);
 
 #endif /* MULTITHREADING_H */
 
