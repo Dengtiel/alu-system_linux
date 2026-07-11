@@ -35,3 +35,6 @@ node_t *list_add_tail(list_t *list, void *content);
 void list_destroy(list_t *list, void (*destroy)(void *));
 
 #endif /* LIST_H */
+
+list_t *list_init(list_t *list);
+void list_each(list_t *list, void (*func)(void *));

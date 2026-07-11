@@ -94,3 +94,38 @@ void list_destroy(list_t *list, void (*destroy)(void *))
 	list->head = NULL;
 	list->tail = NULL;
 }
+
+/**
+ * list_init - initializes an existing list structure
+ * @list: pointer to the list to initialize
+ *
+ * Return: pointer to the list, or NULL on failure
+ */
+list_t *list_init(list_t *list)
+{
+	if (!list)
+		return (NULL);
+	list->size = 0;
+	list->head = NULL;
+	list->tail = NULL;
+	return (list);
+}
+
+/**
+ * list_each - executes a function on each node content
+ * @list: pointer to the list
+ * @func: function to execute on each content
+ */
+void list_each(list_t *list, void (*func)(void *))
+{
+	node_t *node;
+
+	if (!list || !func)
+		return;
+	node = list->head;
+	while (node)
+	{
+		func(node->content);
+		node = node->next;
+	}
+}
