@@ -1,46 +1,71 @@
 #include <stdlib.h>
-#include <stdio.h>
-#include "multithreading.h"
 #include "list.h"
+#include "multithreading.h"
 
 /**
- * prime_factors - factorizes a number into prime factors
- * @s: string representation of the number
+ * prime_factors - Factorizes a number into prime factors
+ * @s: String representation of the positive number
  *
- * Return: pointer to list of prime factors, or NULL on failure
+ * Return: Pointer to a list of prime factors, or NULL on failure
  */
 list_t *prime_factors(char const *s)
 {
-	unsigned long n, factor;
-	unsigned long *val;
-	list_t *list;
+	list_t *factors;
+	unsigned long number;
+	unsigned long divisor;
+	unsigned long values[sizeof(unsigned long) * 8];
+	unsigned long *value;
+	size_t count;
+	size_t i;
 
-	n = strtoul(s, NULL, 10);
-	list = list_create();
-	if (!list)
+	if (s == NULL)
 		return (NULL);
 
-	factor = 2;
-	while (factor * factor <= n)
+	number = strtoul(s, NULL, 10);
+	factors = list_create();
+	if (factors == NULL)
+		return (NULL);
+
+	count = 0;
+
+	while (number % 2 == 0)
 	{
-		while (n % factor == 0)
+		values[count++] = 2;
+		number /= 2;
+	}
+
+	for (divisor = 3; divisor <= number / divisor; divisor += 2)
+	{
+		while (number % divisor == 0)
 		{
-			val = malloc(sizeof(unsigned long));
-			if (!val)
-				return (list);
-			*val = factor;
-			list_add_tail(list, val);
-			n /= factor;
+			values[count++] = divisor;
+			number /= divisor;
 		}
-		factor++;
 	}
-	if (n > 1)
+
+	if (number > 1)
+		values[count++] = number;
+
+	for (i = count; i > 0; i--)
 	{
-		val = malloc(sizeof(unsigned long));
-		if (!val)
-			return (list);
-		*val = n;
-		list_add_tail(list, val);
+		value = malloc(sizeof(*value));
+		if (value == NULL)
+		{
+			list_destroy(factors, free);
+			free(factors);
+			return (NULL);
+		}
+
+		*value = values[i - 1];
+
+		if (list_add(factors, value) == NULL)
+		{
+			free(value);
+			list_destroy(factors, free);
+			free(factors);
+			return (NULL);
+		}
 	}
-	return (list);
+
+	return (factors);
 }
