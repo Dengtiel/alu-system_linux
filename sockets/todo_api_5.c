@@ -147,18 +147,24 @@ static void handle_post_todos(int client_fd, char *client_ip, char *buf)
 static void handle_get_todos(int client_fd, char *client_ip)
 {
 	char json[BUFSIZE];
-	char item[512];
+	char *item;
+	size_t need;
 	int  i;
 
 	strcpy(json, "[");
 	for (i = 0; i < todo_count; i++)
 	{
-		snprintf(item, 512,
+		need = strlen(todos[i].title) + strlen(todos[i].description) + 64;
+		item = malloc(need);
+		if (item == NULL)
+			continue;
+		snprintf(item, need,
 			"%s{\"id\":%d,\"title\":\"%s\","
 			"\"description\":\"%s\"}",
 			i > 0 ? "," : "",
 			todos[i].id, todos[i].title, todos[i].description);
 		strncat(json, item, BUFSIZE - strlen(json) - 1);
+		free(item);
 	}
 	strncat(json, "]", BUFSIZE - strlen(json) - 1);
 	printf("%s GET /todos -> 200 OK\n", client_ip);
