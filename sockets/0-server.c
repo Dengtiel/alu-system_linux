@@ -7,25 +7,35 @@
 #define PORT 12345
 
 /**
- * main - opens an IPv4/TCP socket and listens on port 12345
+ * create_socket - creates and configures a TCP socket
  *
- * Return: EXIT_SUCCESS or EXIT_FAILURE
+ * Return: socket file descriptor or -1 on failure
  */
-int main(void)
+static int create_socket(void)
 {
 	int server_fd;
-	struct sockaddr_in addr;
 	int opt;
 
 	server_fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (server_fd == -1)
 	{
 		perror("socket");
-		return (EXIT_FAILURE);
+		return (-1);
 	}
-
 	opt = 1;
 	setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+	return (server_fd);
+}
+
+/**
+ * bind_and_listen - binds socket to port and starts listening
+ * @server_fd: socket file descriptor
+ *
+ * Return: 0 on success, -1 on failure
+ */
+static int bind_and_listen(int server_fd)
+{
+	struct sockaddr_in addr;
 
 	addr.sin_family = AF_INET;
 	addr.sin_addr.s_addr = INADDR_ANY;
@@ -34,13 +44,31 @@ int main(void)
 	if (bind(server_fd, (struct sockaddr *)&addr, sizeof(addr)) == -1)
 	{
 		perror("bind");
-		close(server_fd);
-		return (EXIT_FAILURE);
+		return (-1);
 	}
-
 	if (listen(server_fd, 10) == -1)
 	{
 		perror("listen");
+		return (-1);
+	}
+	return (0);
+}
+
+/**
+ * main - opens an IPv4/TCP socket and listens on port 12345
+ *
+ * Return: EXIT_SUCCESS or EXIT_FAILURE
+ */
+int main(void)
+{
+	int server_fd;
+
+	server_fd = create_socket();
+	if (server_fd == -1)
+		return (EXIT_FAILURE);
+
+	if (bind_and_listen(server_fd) == -1)
+	{
 		close(server_fd);
 		return (EXIT_FAILURE);
 	}
@@ -48,7 +76,6 @@ int main(void)
 	printf("Server listening on port %d\n", PORT);
 	fflush(stdout);
 
-	/* Hang indefinitely */
 	while (1)
 		pause();
 
