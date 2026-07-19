@@ -99,6 +99,7 @@ static void handle_client(int client_fd, struct sockaddr_in *client_addr)
  */
 int main(void)
 {
+	setbuf(stdout, NULL);
 	int server_fd, client_fd;
 	struct sockaddr_in client_addr;
 	socklen_t client_len;

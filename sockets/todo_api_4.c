@@ -152,6 +152,7 @@ static void handle_post_todos(int client_fd, char *client_ip, char *buf)
  */
 int main(void)
 {
+	setbuf(stdout, NULL);
 	int server_fd, client_fd;
 	struct sockaddr_in client_addr;
 	socklen_t client_len;
