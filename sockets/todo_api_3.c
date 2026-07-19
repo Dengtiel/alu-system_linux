@@ -99,10 +99,10 @@ static void handle_client(int client_fd, struct sockaddr_in *client_addr)
  */
 int main(void)
 {
-	setbuf(stdout, NULL);
 	int server_fd, client_fd;
 	struct sockaddr_in client_addr;
 	socklen_t client_len;
+	setbuf(stdout, NULL);
 
 	server_fd = create_server(PORT);
 	if (server_fd == -1)

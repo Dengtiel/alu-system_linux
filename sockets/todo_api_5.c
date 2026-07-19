@@ -178,12 +178,12 @@ static void handle_get_todos(int client_fd, char *client_ip)
  */
 int main(void)
 {
-	setbuf(stdout, NULL);
 	int server_fd, client_fd;
 	struct sockaddr_in client_addr;
 	socklen_t client_len;
 	char buf[BUFSIZE], tmp[BUFSIZE];
 	char *method, *path, *client_ip;
+	setbuf(stdout, NULL);
 
 	server_fd = create_server(PORT);
 	if (server_fd == -1)
